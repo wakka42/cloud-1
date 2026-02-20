@@ -1,0 +1,15 @@
+---
+# tasks file for basic_config
+
+- name: Update package index
+  ansible.builtin.yum:
+    name: "*"
+    state: latest
+
+- name: Install packages
+  ansible.builtin.yum:
+    name:
+      - git
+      - vim
+      - wget
+    state: present

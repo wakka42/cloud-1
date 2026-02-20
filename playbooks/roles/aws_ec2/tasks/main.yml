@@ -1,0 +1,40 @@
+---
+# tasks file for aws_ec2
+
+# Used to specify how to connect to the instance (SSH for example)
+- name: Create a Security Group
+  amazon.aws.ec2_security_group:
+    name: dockerized-app-sg
+    description: "Dockerized app security group"
+    region: eu-west-3
+    state: present
+    rules:
+      - proto: tcp
+        cidr_ip: "{{ CONTROL_NODE_IP }}/32"
+        from_port: 22
+        to_port: 22
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+
+# Create the server that will run docker
+- name: Launch an instance
+  amazon.aws.ec2_instance:
+    region: eu-west-3
+    # name: "dockerized-app"
+    instance_type: t3.micro
+    image_id: ami-0c5c1b3399d21cdc6
+    security_group: dockerized-app-sg
+    vpc_subnet_id: subnet-025c01e03eb558d4f
+    key_name: aws
+    state: present
+    exact_count: 2
+    wait: true
+    tags:
+      Name: dockerized-app
+      Project: "docker"

@@ -1,0 +1,37 @@
+---
+# tasks file for clean
+
+# Get the info of the instances ec2
+- name: Gather EC2 instances
+  amazon.aws.ec2_instance_info:
+    region: eu-west-3
+  register: ec2_info
+
+# Select only the instances with the tag Project set as Docker
+- name: Set fact for matching instances
+  set_fact:
+    matching_instances: >
+      {{
+        ec2_info.instances
+        | selectattr('tags.Project', 'defined')
+        | selectattr('tags.Project', 'equalto', 'docker')
+        | selectattr('state.name', 'equalto', 'running')
+        | map(attribute='instance_id')
+        | list
+      }}
+
+# Destroy running docker servers
+- name: Destroy running docker instances
+  amazon.aws.ec2_instance:
+    region: eu-west-3
+    state: terminated
+    instance_ids: "{{ matching_instances }}"
+    wait: true
+  when: matching_instances | length > 0
+
+# Destroy the security group of the instances
+- name: Destroy a Security Group
+  amazon.aws.ec2_security_group:
+    name: dockerized-app-sg
+    region: eu-west-3
+    state: absent

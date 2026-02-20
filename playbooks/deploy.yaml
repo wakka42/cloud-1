@@ -1,0 +1,7 @@
+- name: update the packages, instal docker compose and run services
+  hosts: docker
+  become: true
+  roles:
+    - basic_config
+    - docker
+    - services
