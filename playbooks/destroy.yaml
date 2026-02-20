@@ -1,0 +1,4 @@
+- name: Create and setup an ec2 instance
+  hosts: dockerized-app
+  roles:
+    - clean
