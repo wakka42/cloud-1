@@ -2,4 +2,3 @@
   hosts: localhost
   roles:
     - aws_ec2
-    - basic_config

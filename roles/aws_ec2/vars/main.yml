@@ -1,4 +1,0 @@
----
-# vars file for aws_ec2
-
-CONTROL_NODE_IP: 15.188.15.13
